@@ -166,6 +166,7 @@ PHP_FUNCTION(genhash) {
     }
 
     unsigned char *digest;
+    int i;
     double simhash[HASH_LENGTH * 8];
     memset(simhash, 0, sizeof(double) * HASH_LENGTH * 8);
     digest = emalloc(HASH_LENGTH + 1);
@@ -198,7 +199,7 @@ PHP_FUNCTION(genhash) {
         PHP_SHA1Update(&sha1_context, (unsigned char *)Z_STRVAL(titem), Z_STRLEN(titem));
         PHP_SHA1Final(digest, &sha1_context);
 
-        for(int i = 0; i < HASH_LENGTH * 8; i++) {
+        for(i = 0; i < HASH_LENGTH * 8; i++) {
             int bitpos = powers[7 - (i % 8)];
             int d = digest[i / 8] & bitpos;
             if(d == bitpos)
@@ -213,7 +214,7 @@ PHP_FUNCTION(genhash) {
     efree(digest);
 
     char final[HASH_LENGTH + 1];
-    for(int i = 0; i < HASH_LENGTH * 8; i++) {
+    for(i = 0; i < HASH_LENGTH * 8; i++) {
         unsigned int bitpos = powers[7 - (i % 8)];
         if(simhash[i] > 0)
             final[i / 8] = final[i / 8] | bitpos;
@@ -235,11 +236,12 @@ PHP_FUNCTION(cmphash) {
         RETVAL_BOOL(0);
     }
 
+    int i, j;
     int cnt = 0;
     char simhash;
-    for(int i = 0; i < len1; i++) {
+    for(i = 0; i < len1; i++) {
         simhash = fp1[i] ^ fp2[i];
-        for(int j = 0; j < 8; j++) {
+        for(j = 0; j < 8; j++) {
             int bit = powers[j];
             if(bit == (simhash & bit))
                 cnt++;
