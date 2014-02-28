@@ -177,15 +177,18 @@ PHP_FUNCTION(genhash) {
 
         zval **ppval, **ppwval, titem, tweight;
         //get current weight, default 1
-        ZVAL_LONG(&tweight, 1);
         if(Z_TYPE_P(weights) == IS_ARRAY) {
             zend_hash_get_current_data(Z_ARRVAL_P(weights), (void **)&ppwval);
             tweight = **ppwval;
             zval_copy_ctor(&tweight);
             INIT_PZVAL(&tweight);
-            convert_to_long(&tweight);
+            convert_to_double(&tweight);
             zend_hash_move_forward(Z_ARRVAL_P(weights));
         }
+        else
+            ZVAL_DOUBLE(&tweight, 1.0);
+
+        //php_printf("%f\n", Z_DVAL(tweight));
 
         zend_hash_get_current_data(htDS, (void**)&ppval);
         titem = **ppval;
@@ -199,9 +202,9 @@ PHP_FUNCTION(genhash) {
             int bitpos = powers[7 - (i % 8)];
             int d = digest[i / 8] & bitpos;
             if(d == bitpos)
-                simhash[i] += Z_LVAL(tweight);
+                simhash[i] += Z_DVAL(tweight);
             else
-                simhash[i] -= Z_LVAL(tweight);
+                simhash[i] -= Z_DVAL(tweight);
         }
 
         zval_dtor(&titem);

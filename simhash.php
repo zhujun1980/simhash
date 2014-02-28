@@ -1,5 +1,5 @@
 <?php
-//var_dump(genhash(array(2, 1, 2, 4, 5), array(1, 2, 3, 4, 5)));
+//var_dump(genhash(genhash(array(2, 1, 2, 4, 5), array(1, 2, 3, 4, 5.0))));
 //var_dump(genhash(array(2, 1, 2, 4, 5), NULL));
 //var_dump(genhash(array(2, 1, 2, 4, 5), array(1, NULL, false, "abc", array())));
 //var_dump(genhash(array(), array()));
@@ -30,3 +30,10 @@ function simhash($d1, $d2) {
         )
     );
 }
+
+echo bin2hex(
+    genhash(
+        array('a', 'b', 'c'),
+        array(0.5, 0.3, 0.2)
+    )
+);
