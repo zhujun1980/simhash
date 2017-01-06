@@ -3,6 +3,12 @@ SimHash PHP Extension
 
 SimHash(相似性哈希)可以计算两个实体之间的相似程度，用于识别抄袭。更多信息见 [SimHash or the way to compare quickly two datasets](http://titouangalopin.com/blog/2013/11/simhash-or-the-way-to-compare-quickly-two-datasets)。
 
+php7
+-----
+
+增加了新的分支，支持php7
+
+    git checkout php7
 
 Install
 -----
