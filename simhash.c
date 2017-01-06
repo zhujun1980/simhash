@@ -176,13 +176,13 @@ PHP_FUNCTION(genhash) {
         zend_hash_has_more_elements(htDS) == SUCCESS;
         zend_hash_move_forward(htDS)) {
 
-        zval **ppval, **ppwval, titem, tweight;
+        zval *pval, *pwval, titem, tweight;
         //get current weight, default 1
         if(Z_TYPE_P(weights) == IS_ARRAY) {
-            zend_hash_get_current_data(Z_ARRVAL_P(weights), (void **)&ppwval);
-            tweight = **ppwval;
+            pwval = zend_hash_get_current_data(Z_ARRVAL_P(weights));
+            tweight = *pwval;
             zval_copy_ctor(&tweight);
-            INIT_PZVAL(&tweight);
+            //INIT_PZVAL(&tweight);
             convert_to_double(&tweight);
             zend_hash_move_forward(Z_ARRVAL_P(weights));
         }
@@ -191,10 +191,10 @@ PHP_FUNCTION(genhash) {
 
         //php_printf("%f\n", Z_DVAL(tweight));
 
-        zend_hash_get_current_data(htDS, (void**)&ppval);
-        titem = **ppval;
+        pval = zend_hash_get_current_data(htDS);
+        titem = *pval;
         zval_copy_ctor(&titem);
-        INIT_PZVAL(&titem);
+        //INIT_PZVAL(&titem);
         convert_to_string(&titem);
         PHP_SHA1Update(&sha1_context, (unsigned char *)Z_STRVAL(titem), Z_STRLEN(titem));
         PHP_SHA1Final(digest, &sha1_context);
@@ -222,15 +222,23 @@ PHP_FUNCTION(genhash) {
             final[i / 8] = final[i / 8] & ~bitpos;
     }
 
-    RETVAL_STRINGL(final, HASH_LENGTH, 1);
+    RETVAL_STRINGL(final, HASH_LENGTH);
 }
 
 PHP_FUNCTION(cmphash) {
     char *fp1, *fp2;
+    zend_string *s1, *s2;
     int len1, len2;
-    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &fp1, &len1, &fp2, &len2) == FAILURE) {
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS", &s1, &s2) == FAILURE) {
         RETVAL_DOUBLE(0);
     }
+	len1 = ZSTR_LEN(s1);
+	len2 = ZSTR_LEN(s2);
+	fp1 = ZSTR_VAL(s1);
+	fp2 = ZSTR_VAL(s2);
+
+	//printf("%d - %d\n", len1, len2);
+	//printf("%s - %s\n", fp1, fp2);
     if(len1 != len2) {
         zend_error(E_WARNING, "fp1's length is not equal fp2");
         RETVAL_BOOL(0);
